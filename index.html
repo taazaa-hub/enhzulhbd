@@ -2,39 +2,8 @@
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HBD Энхзул 💞</title>        
     <link type="text/css" rel="stylesheet" href="file/default.css">
-    <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #ffe; }
-        #main { width: 100%; height: 100vh; position: relative; }
-        #wrap { width: 100%; height: 100%; position: relative; }
-        #text { 
-            position: absolute; 
-            top: 10%; 
-            left: 5%; 
-            width: 90%; 
-            z-index: 1000; /* Бичвэрийг хамгийн дээр гаргах */
-            pointer-events: none; /* Бичвэр дээр дарахад доорх canvas-д нөлөөлөхгүй байх */
-        }
-        #code { display: none; font-size: 16px; color: #333; }
-        #canvas { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100% !important; 
-            height: 100% !important; 
-            z-index: 1; 
-        }
-        #clock-box { 
-            position: absolute; 
-            bottom: 20px; 
-            left: 5%; 
-            z-index: 1000; 
-            font-size: 12px;
-        }
-        .say { font-size: 18px !important; font-weight: bold; color: #d03; }
-    </style>
     <script type="text/javascript" src="file/jquery.min.js"></script>
     <script type="text/javascript" src="file/jscex.min.js"></script>
     <script type="text/javascript" src="file/jscex-parser.js"></script>
@@ -47,7 +16,8 @@
 </head>
 <body>
     <div id="main">
-        <audio id="myAudio" loop="loop">
+        <div id="error">Таны хөтөч дэмжихгүй байна. Chrome эсвэл Firefox ашиглана уу.</div>
+        <audio autoplay="autoplay" id="myAudio">
             <source src="aud.mp3" type="audio/mp3" />
         </audio>
         
@@ -55,34 +25,36 @@
             <div id="text">
                 <div id="code">
                     <span class="say">Энхзулдаа 💞</span><br>
-                    <span class="say">20 насны төрсөн өдрийн мэнд! 🎈</span><br>
-                    <span class="say">ӨВЛИЙН АДАГ ХӨХӨГЧИН ҮХЭР САРЫН ❄️</span><br>
-                    <span class="say">АРВАН ГУРАВНЫ УЛААГЧИН ГАХАЙ ӨДӨР 🐷</span><br>
-                    <span class="say">Чин сэтгэлийн мэндийг хүргэе❤️</span><br>
+                    <span class="say">ӨВЛИЙН АДАГ ХӨХӨГЧИН ҮХЭР САРЫН🎈</span><br>
+                    <span class="say">АРВАН ГУРАВНЫ УЛААГЧИН ГАХАЙ ӨДӨР❄️</span><br>
+                    <span class="say">Төрсөний өдөрийн гал халуун мэндийг🐷</span><br>
+                    <span class="say">Таазаа найз нь сэтгэлээсээ мэнд хүргье❤️</span><br>
                     <span class="say">Хамгаас хайрт найзаас нь 😏</span><br>
-                    <span class="say">Чамд дэлхийн хамгийн сайн сайхныг хүсье ✨</span><br>
+                    <span class="say">Борко ахдаа 20 нас хүрж хөгширсөний баярын мэнд ✨</span><br>
                 </div>
             </div>
             <div id="clock-box">
-                Энхзул мэндэлснээс хойш <span id="clock"></span> өнгөрчээ.
+                Энхзул мэндэлснээс хойш <span id="clock">7305 days 0 hours 0 minutes 0 seconds</span> өнгөрчээ.
             </div>
-            <canvas id="canvas"></canvas>
+            <canvas id="canvas" width="1100" height="680"></canvas>
         </div>
     </div>
 
     <script>
     (function() {
         var canvas = $('#canvas');
-        var width = $(window).width();
-        var height = $(window).height();
+        if (!canvas[0].getContext) { $("#error").show(); return false; }
+
+        var width = canvas.width();
+        var height = canvas.height();        
         canvas.attr("width", width);
         canvas.attr("height", height);
 
         var opts = {
-            seed: { x: width / 2, y: height / 2, color: "rgb(255, 120, 150)", scale: 2 },
-            branch: [[width/2, height, width/2, height-200, width/2-100, height-250, 30, 100]],
-            bloom: { num: 500, width: width, height: height },
-            footer: { width: width, height: 5, speed: 10 }
+            seed: { x: width / 2 - 20, color: "rgb(255, 120, 150)", scale: 2 },
+            branch: [[535, 680, 570, 250, 500, 200, 30, 100, [[540, 500, 455, 417, 340, 400, 13, 100, [[450, 435, 434, 430, 394, 395, 2, 40]]],[550, 445, 600, 356, 680, 345, 12, 100, [[578, 400, 648, 409, 661, 426, 3, 80]]],[539, 281, 537, 248, 534, 217, 3, 40],[546, 397, 413, 247, 328, 244, 9, 80, [[427, 286, 383, 253, 371, 205, 2, 40],[498, 345, 435, 315, 395, 330, 4, 60]]],[546, 357, 608, 252, 678, 221, 6, 100, [[590, 293, 646, 277, 648, 271, 2, 80]]]]]],
+            bloom: { num: 700, width: 1080, height: 650 },
+            footer: { width: 1200, height: 5, speed: 10 }
         }
 
         var tree = new Tree(canvas[0], width, height, opts);
@@ -90,16 +62,29 @@
         var foot = tree.footer;
         var hold = 1;
 
-        // Утас болон компьютер дээр хоёулан дээр нь ажиллах даралт
-        var startEvent = ('ontouchstart' in window) ? 'touchstart' : 'click';
+        // Хулгана дагасан зүрх
+        $(document).mousemove(function(e) {
+            var heart = $('<div style="position:fixed; color:#ffb6c1; pointer-events:none; z-index:999">❤️</div>');
+            heart.css({ left: e.pageX, top: e.pageY, fontSize: Math.random() * 15 + 10 + 'px' });
+            $('body').append(heart);
+            heart.animate({ top: e.pageY - 50, opacity: 0 }, 1000, function() { $(this).remove(); });
+        });
 
-        $(document).on(startEvent, function() {
-            if (hold) {
-                var audio = document.getElementById("myAudio");
-                audio.play();
+        canvas.click(function(e) {
+            var audio = document.getElementById("myAudio");
+            audio.play();
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            if (seed.hover(x, y)) {
                 hold = 0; 
-                $(document).off(startEvent);
+                canvas.unbind("click").unbind("mousemove").removeClass('hand');
             }
+        }).mousemove(function(e) {
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            canvas.toggleClass('hand', seed.hover(x, y));
         });
 
         var seedAnimate = eval(Jscex.compile("async", function () {
@@ -118,9 +103,13 @@
         }));
 
         var moveAnimate = eval(Jscex.compile("async", function () {
-            tree.snapshot("p1", 0, 0, width, height);
-            while (tree.move("p1", 0, 0)) { foot.draw(); $await(Jscex.Async.sleep(10)); }
+            tree.snapshot("p1", 240, 0, 610, 680);
+            while (tree.move("p1", 500, 0)) { foot.draw(); $await(Jscex.Async.sleep(10)); }
             foot.draw();
+            tree.snapshot("p2", 500, 0, 610, 680);
+            canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+            $await(Jscex.Async.sleep(300));
+            canvas.css("background", "none");
         }));
 
         var textAnimate = eval(Jscex.compile("async", function () {
