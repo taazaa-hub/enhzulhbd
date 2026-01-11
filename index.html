@@ -6,27 +6,34 @@
     <title>HBD Энхзул 💞</title>        
     <link type="text/css" rel="stylesheet" href="file/default.css">
     <style>
-        /* Утасны дэлгэцэнд зориулсан нэмэлт загвар */
-        body { margin: 0; padding: 0; overflow-x: hidden; }
-        #main { width: 100% !important; height: auto !important; }
-        #wrap { width: 100% !important; position: relative !important; margin-top: 20px !important; }
-        #canvas { width: 100% !important; height: auto !important; }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #ffe; }
+        #main { width: 100%; height: 100vh; position: relative; }
+        #wrap { width: 100%; height: 100%; position: relative; }
         #text { 
-            position: absolute !important; 
-            top: 50px !important; 
-            left: 10px !important; 
-            width: 90% !important; 
-            z-index: 100;
-            font-size: 14px !important; 
+            position: absolute; 
+            top: 10%; 
+            left: 5%; 
+            width: 90%; 
+            z-index: 1000; /* Бичвэрийг хамгийн дээр гаргах */
+            pointer-events: none; /* Бичвэр дээр дарахад доорх canvas-д нөлөөлөхгүй байх */
+        }
+        #code { display: none; font-size: 16px; color: #333; }
+        #canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100% !important; 
+            height: 100% !important; 
+            z-index: 1; 
         }
         #clock-box { 
-            position: relative !important; 
-            bottom: 0 !important; 
-            left: 10px !important; 
-            font-size: 12px !important; 
-            width: 90%;
+            position: absolute; 
+            bottom: 20px; 
+            left: 5%; 
+            z-index: 1000; 
+            font-size: 12px;
         }
-        .say { font-size: 16px !important; line-height: 1.5 !important; }
+        .say { font-size: 18px !important; font-weight: bold; color: #d03; }
     </style>
     <script type="text/javascript" src="file/jquery.min.js"></script>
     <script type="text/javascript" src="file/jscex.min.js"></script>
@@ -40,8 +47,7 @@
 </head>
 <body>
     <div id="main">
-        <div id="error">Таны хөтөч дэмжихгүй байна. Chrome эсвэл Firefox ашиглана уу.</div>
-        <audio autoplay="autoplay" id="myAudio" loop="loop">
+        <audio id="myAudio" loop="loop">
             <source src="aud.mp3" type="audio/mp3" />
         </audio>
         
@@ -67,17 +73,15 @@
     <script>
     (function() {
         var canvas = $('#canvas');
-        if (!canvas[0].getContext) { $("#error").show(); return false; }
-
         var width = $(window).width();
         var height = $(window).height();
         canvas.attr("width", width);
         canvas.attr("height", height);
 
         var opts = {
-            seed: { x: width / 2, color: "rgb(255, 120, 150)", scale: 2 },
-            branch: [[width/2, height, width/2, height-250, width/2-100, height-300, 30, 100, [[width/2+10, height-150, width/2-50, height-250, width/2-150, height-280, 13, 100]]]],
-            bloom: { num: 500, width: width, height: height - 100 },
+            seed: { x: width / 2, y: height / 2, color: "rgb(255, 120, 150)", scale: 2 },
+            branch: [[width/2, height, width/2, height-200, width/2-100, height-250, 30, 100]],
+            bloom: { num: 500, width: width, height: height },
             footer: { width: width, height: 5, speed: 10 }
         }
 
@@ -86,11 +90,16 @@
         var foot = tree.footer;
         var hold = 1;
 
-        canvas.click(function(e) {
-            var audio = document.getElementById("myAudio");
-            audio.play();
-            hold = 0; 
-            canvas.unbind("click");
+        // Утас болон компьютер дээр хоёулан дээр нь ажиллах даралт
+        var startEvent = ('ontouchstart' in window) ? 'touchstart' : 'click';
+
+        $(document).on(startEvent, function() {
+            if (hold) {
+                var audio = document.getElementById("myAudio");
+                audio.play();
+                hold = 0; 
+                $(document).off(startEvent);
+            }
         });
 
         var seedAnimate = eval(Jscex.compile("async", function () {
